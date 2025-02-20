@@ -26,13 +26,13 @@
 		></script>
 
 		<style>
-			#marks > div {
+			.marks > div {
 				display: grid;
-				grid-template-columns: 2fr repeat(2, 1fr);
+				grid-template-columns: 4fr 2fr 2fr 1fr;
 			}
 			#svg {
-				width: 100vh;
-				height: calc(100vw * 0.75);
+				width: calc((100vw * 0.75) - 20px);
+				height: 100vh;
 				border: 1px solid #ddddddbb;
 				box-sizing: border-box;
 			}
@@ -42,42 +42,55 @@
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-3">
-					<label for="newValue" class="col-form-label-sm">Add</label>
+					
+					<div class="row gy-3 gx-2 mb-1 align-items-center">
+						<div class="col-1"><b>X: </b></div>
+						<!-- Text Input -->
+						<div class="col-5">
+							<input type="number" id="minX" id="minX" class="form-control-sm" />
+						</div>
+						<div class="col-5">
+							<input type="number" id="maxX" id="maxX" class="form-control-sm" />
+						</div>
+					</div>
+					<div class="row gy-3 gx-2 mb-2 align-items-center">
+						<div class="col-1"><b>Z: </b></div>
+						<!-- Text Input -->
+						<div class="col-5">
+							<input type="number" id="minZ" id="minZ" class="form-control-sm" />
+						</div>
+						<div class="col-5">
+							<input type="number" id="maxZ" id="maxZ" class="form-control-sm" />
+						</div>
+					</div>
+
 					<div class="row gy-3 gx-2 align-items-center">
+
 						<!-- Text Input -->
 						<div class="col-6">
-							<input
-								type="text"
-								id="newValue"
-								class="form-control-sm"
-							/>
+							<input type="text" id="newValue" class="form-control-sm" />
 						</div>
 
 						<!-- Type DropDown -->
 						<div class="col-4">
-							<select
-								id="markType"
-								class="form-select form-select-sm"
-								aria-label=".form-select-sm mark-type"
-							></select>
+							<select id="markType" class="form-select form-select-sm" aria-label=".form-select-sm mark-type"></select>
 						</div>
 
 						<!-- Submit Button -->
 						<div class="col-2">
-							<button
-								class="btn btn-outline-secondary btn-sm"
-								type="button"
-								id="submit"
-							>
-								Add
-							</button>
+							<button class="btn btn-outline-secondary btn-sm" type="button" id="submit">Add</button>
 						</div>
 					</div>
 
-					<div id="marks" class="coords"></div>
+					<div id="coords" class="coords">
+						<div class="marks">
+							<div><b>Type</b><b>X</b><b>Z</b><b>&nbsp;</b></div>
+						</div>
+						<div id="marks" class="marks"></div>
+					</div>
 				</div>
 				<div class="col-9">
-					<svg id="svg"></svg>
+					<svg id="svg" width="calc((100vw * 0.75) - 20px)" height="100vh"><polygon points="50,10 0,190 100,190" fill="lime" /></svg>
 				</div>
 			</div>
 		</div>
@@ -93,8 +106,16 @@
 					smallRuin: "Small Ruin",
 					shipwreck: "Shipwreck",
 				};
+				var svgWidth = $("#svg").width(),
+					svgHeight = $("#svg").height(),
+					minX = 0,
+					maxX = svgWidth,
+					minY = 0,
+					maxY = svgHeight;
+
 				// storage
 				function _setLocalStorage(value) {
+					localStorage.removeItem("cherryList");
 					localStorage.setItem("cherryList", JSON.stringify(value));
 				}
 				function _getLocalStorage() {
@@ -104,44 +125,75 @@
 				// helpers
 				function createMark(value) {
 					const type = $("#markType").val(),
-						id = genID();
+						id = genID(),
+						oldList = _getLocalStorage();
 
-					const valueSplit = value.split(" ");
-					console.log("valueSplit: ", valueSplit);
-					newList = {
-						..._getLocalStorage(),
-						[id]: {
-							id,
-							type,
-							x: valueSplit[1],
-							z: valueSplit[3],
-						},
-					};
+					if (value && type && id) {
+						const valueSplit = value.split(" ");
+						console.log("valueSplit: ", valueSplit);
 
-					_setLocalStorage(newList);
+						const newList = {
+							...oldList,
+							[id]: {
+								id,
+								type,
+								x: valueSplit[1],
+								z: valueSplit[3],
+							},
+						};
 
-					displayMarks();
+						_setLocalStorage(newList);
+
+						displayMarks();
+
+						$("#newValue").val("");
+					}
 				}
 				function genID() {
 					return Math.random()
 						.toString(36)
 						.substring(2, 12 + 2);
 				}
-				// display
-				function displayMarks(l = null) {
-					if (!l) l = _getLocalStorage();
 
-					Object.entries(l).forEach(function ([
-						key,
-						{ id, type, x, z },
-					]) {
+				// display
+				function displayMarks(marks = null) {
+					if (!marks) marks = _getLocalStorage();
+
+					// clear
+					$("#marks").html("");
+					$("#svg").html("");
+
+					Object.entries(marks).forEach(function ([key, { id, type, x, z }]) {
+						// mark list
 						$("#marks").append(
 							$("<div id='" + id + "'></div>")
 								.append($("<div></div>").text(type))
 								.append($("<div></div>").text(x))
 								.append($("<div></div>").text(z))
+								.append($("<div></div>").append($("<button>X</button>")))
 						);
+
+						// svg
+						const fC = type === "village" ? "brown" : "red";
+						$("#svg").append(rect(10, 10, translateX(x), translateY(z), fC));
 					});
+				}
+				function rect(width, height, x, y, fill) {
+					// return `<rect width="${width}" height="${height}" x="${x}" y="${y}" fill="${fill}" />`;
+					console.log("width: ", width, " height: ", height, " x: ", x, " y: ", y, " fill: ", fill)
+					return $("<rect/>", {
+						width,
+						height,
+						x,
+						y,
+						fill,
+					});
+				}
+				function translateX(x) {
+					return ((x - minX) / (maxX - minX)) * svgWidth;
+				}
+				function translateY(z) {
+					return ((z - minY) / (maxY - minY)) * svgHeight;
 				}
 
 				// init storage
@@ -151,16 +203,14 @@
 
 				// init options
 				Object.entries(listInfo).forEach(function ([val, name]) {
-					$("#markType").append(
-						$("<option></option>").val(val).text(name)
-					);
+					$("#markType").append($("<option></option>").val(val).text(name));
 				});
 
 				// on enter
 				$("#newValue").on("keypress", function (e) {
+					const v = e.target.value;
 					// if enter key
-					if (e.which == 13) {
-						const v = e.target.value;
+					if (e.which == 13 && v) {
 						console.log("v: ", v);
 						// addValue(e);
 						createMark(v);
@@ -170,7 +220,7 @@
 				$("#submit").on("click", function (e) {
 					const v = $("#newValue").val();
 					console.log("v: ", v);
-					createMark(v);
+					if (v) createMark(v);
 				});
 			});
 		</script>
