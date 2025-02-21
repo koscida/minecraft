@@ -42,30 +42,35 @@
 		<div class="container-fluid">
 			<div class="row">
 				<div class="col-3">
-					
 					<div class="row gy-3 gx-2 mb-1 align-items-center">
-						<div class="col-1"><b>X: </b></div>
+						<div class="col-1"><b>&nbsp;</b></div>
+						<div class="col-5"><b>Min</b></div>
+						<div class="col-5"><b>Max</b></div>
+					</div>
+					<div class="row gy-3 gx-2 mb-1 align-items-center">
+						<div class="col-1"><b>X</b></div>
 						<!-- Text Input -->
 						<div class="col-5">
-							<input type="number" id="minX" id="minX" class="form-control-sm" />
+							<input type="number" id="minX" name="minX" class="form-control-sm minMax" />
 						</div>
 						<div class="col-5">
-							<input type="number" id="maxX" id="maxX" class="form-control-sm" />
+							<input type="number" id="maxX" name="maxX" class="form-control-sm minMax" />
 						</div>
 					</div>
 					<div class="row gy-3 gx-2 mb-2 align-items-center">
-						<div class="col-1"><b>Z: </b></div>
+						<div class="col-1"><b>Z</b></div>
 						<!-- Text Input -->
 						<div class="col-5">
-							<input type="number" id="minZ" id="minZ" class="form-control-sm" />
+							<input type="number" id="minZ" name="minZ" class="form-control-sm minMax" />
 						</div>
 						<div class="col-5">
-							<input type="number" id="maxZ" id="maxZ" class="form-control-sm" />
+							<input type="number" id="maxZ" name="maxZ" class="form-control-sm minMax" />
 						</div>
 					</div>
 
-					<div class="row gy-3 gx-2 align-items-center">
+					<hr />
 
+					<div class="row gy-3 gx-2 align-items-center">
 						<!-- Text Input -->
 						<div class="col-6">
 							<input type="text" id="newValue" class="form-control-sm" />
@@ -90,7 +95,9 @@
 					</div>
 				</div>
 				<div class="col-9">
-					<svg id="svg" width="calc((100vw * 0.75) - 20px)" height="100vh"><polygon points="50,10 0,190 100,190" fill="lime" /></svg>
+					<svg id="svg" width="calc((100vw * 0.75) - 20px)" height="100vh">
+						<polygon points="50,10 0,190 100,190" fill="lime" />
+					</svg>
 				</div>
 			</div>
 		</div>
@@ -106,58 +113,96 @@
 					smallRuin: "Small Ruin",
 					shipwreck: "Shipwreck",
 				};
-				var svgWidth = $("#svg").width(),
-					svgHeight = $("#svg").height(),
-					minX = 0,
-					maxX = svgWidth,
-					minY = 0,
-					maxY = svgHeight;
+				const svgWidth = $("#svg").width(),
+					svgHeight = $("#svg").height();
+				var svgInfo = {
+					minX: 0,
+					maxX: Math.floor(svgWidth),
+					minZ: 0,
+					maxZ: Math.floor(svgHeight),
+				};
+
+				// ///////////
+				// helpers
 
 				// storage
-				function _setLocalStorage(value) {
-					localStorage.removeItem("cherryList");
-					localStorage.setItem("cherryList", JSON.stringify(value));
+				function _setLocalStorage(listKey, value) {
+					localStorage.removeItem(listKey);
+					localStorage.setItem(listKey, JSON.stringify(value));
 				}
-				function _getLocalStorage() {
-					return JSON.parse(localStorage.getItem("cherryList"));
+				function _getLocalStorage(keyName) {
+					return JSON.parse(localStorage.getItem(keyName) ?? "{}");
 				}
 
-				// helpers
+				// crud
 				function createMark(value) {
+					console.log("--createMark--");
 					const type = $("#markType").val(),
-						id = genID(),
-						oldList = _getLocalStorage();
+						id = createID(),
+						oldList = _getLocalStorage("markList");
 
 					if (value && type && id) {
 						const valueSplit = value.split(" ");
 						console.log("valueSplit: ", valueSplit);
 
+						const newMark = {
+							id,
+							type,
+							x: valueSplit[1],
+							z: valueSplit[3],
+						};
 						const newList = {
 							...oldList,
-							[id]: {
-								id,
-								type,
-								x: valueSplit[1],
-								z: valueSplit[3],
-							},
+							[id]: newMark,
 						};
+						console.log("newMark: ", newMark);
 
-						_setLocalStorage(newList);
+						_setLocalStorage("markList", newList);
 
-						displayMarks();
+						displayMarks(newList);
 
 						$("#newValue").val("");
 					}
 				}
-				function genID() {
+				function createID() {
+					console.log("--createID--");
 					return Math.random()
 						.toString(36)
 						.substring(2, 12 + 2);
 				}
+				function updateMinMax(name, value) {
+					console.log("--updateMinMax--");
+					const oldList = _getLocalStorage("svgInfo");
+					const newList = { ...oldList, [name]: value };
+					svgInfo[name] = value;
+					console.log(name, ": ", value);
+					_setLocalStorage("svgInfo", newList);
+				}
+				function initMinMax() {
+					console.log("--initMinMax--");
+					const loc = _getLocalStorage("svgInfo");
+					const minMaxDisplay = Object.entries(svgInfo).reduce(function (d, [k, v]) {
+						if (!loc[k]) updateMinMax(k, v);
+						d[k] = loc[k] ?? v;
+						return d;
+					}, {});
+					console.log("minMaxDisplay: ", minMaxDisplay);
+					svgInfo = minMaxDisplay;
+					displayMinMax(minMaxDisplay);
+				}
+				function initOptions() {
+					Object.entries(listInfo).forEach(function ([val, name]) {
+						$("#markType").append($("<option></option>").val(val).text(name));
+					});
+				}
+
+				// //////////
+				// Render
 
 				// display
 				function displayMarks(marks = null) {
-					if (!marks) marks = _getLocalStorage();
+					console.log("--displayMarks--");
+					if (!marks) marks = _getLocalStorage("markList");
 
 					// clear
 					$("#marks").html("");
@@ -175,51 +220,67 @@
 
 						// svg
 						const fC = type === "village" ? "brown" : "red";
-						$("#svg").append(rect(10, 10, translateX(x), translateY(z), fC));
+						$("#svg").html($("#svg").html() + rect(10, 10, translateX(x), translateZ(z), fC));
 					});
 				}
-				function rect(width, height, x, y, fill) {
-					// return `<rect width="${width}" height="${height}" x="${x}" y="${y}" fill="${fill}" />`;
-					console.log("width: ", width, " height: ", height, " x: ", x, " y: ", y, " fill: ", fill)
-					return $("<rect/>", {
-						width,
-						height,
-						x,
-						y,
-						fill,
+				function displayMinMax(minMaxDisplay) {
+					console.log("--displayMinMax--");
+					if (!minMaxDisplay) minMaxDisplay = svgInfo;
+					Object.entries(minMaxDisplay).forEach(function ([k, v]) {
+						$("#" + k).val(v);
 					});
+				}
+
+				// svg helpers
+				function rect(width, height, x, z, fill) {
+					console.log("width: ", width, " height: ", height, " x: ", x, " z: ", z, " fill: ", fill);
+					// return $("<rect/>", {
+					// 	width,
+					// 	height,
+					// 	x,
+					// 	y: z,
+					// 	fill,
+					// });
+					return `<rect width="${width}" height="${height}" x="${x}" y="${z}" fill="${fill}" />`;
 				}
 				function translateX(x) {
-					return ((x - minX) / (maxX - minX)) * svgWidth;
+					return Math.abs((x - svgInfo.minX) / (svgInfo.maxX - svgInfo.minX)) * svgWidth;
 				}
-				function translateY(z) {
-					return ((z - minY) / (maxY - minY)) * svgHeight;
+				function translateZ(z) {
+					return Math.abs((z - svgInfo.minZ) / (svgInfo.maxZ - svgInfo.minZ)) * svgHeight;
 				}
 
-				// init storage
-				const l = _getLocalStorage();
-				if (!l) _setLocalStorage({});
-				else displayMarks(l);
+				// ////////
+				// init
 
-				// init options
-				Object.entries(listInfo).forEach(function ([val, name]) {
-					$("#markType").append($("<option></option>").val(val).text(name));
-				});
+				// minMax inputs
+				initMinMax();
+				// svg mark
+				displayMarks();
+				// mark options
+				initOptions();
+
+				// ///////////
+				// on handlers
 
 				// on enter
 				$("#newValue").on("keypress", function (e) {
+					console.log("--#newValue on keypress--");
 					const v = e.target.value;
 					// if enter key
 					if (e.which == 13 && v) {
-						console.log("v: ", v);
-						// addValue(e);
 						createMark(v);
 					}
 				});
+				// on any key
+				$(".minMax").on("change click keyup input paste", function (e) {
+					console.log("--.minMax on change--");
+					updateMinMax(e.target.name, e.target.value);
+				});
 				// on submit
 				$("#submit").on("click", function (e) {
+					console.log("--#submit on click--");
 					const v = $("#newValue").val();
-					console.log("v: ", v);
 					if (v) createMark(v);
 				});
 			});
