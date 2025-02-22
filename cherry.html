@@ -124,8 +124,21 @@
 				</div>
 				<div class="col-3">
 					<div class="d-flex flex-row align-items-center gx-3" style="gap: 10px">
-						<div class="" id="mousePosX">0</div>
-						<div class="" id="mousePosZ">0</div>
+						<b>Position: </b>
+						<div class="d-flex flex-row align-items-center gx-3" style="gap: 10px">
+							<div class="" id="mousePosX">0</div>
+							<div class="" id="mousePosY">0</div>
+						</div>
+						<b>Coordinates: </b>
+						<div class="d-flex flex-row align-items-center gx-3" style="gap: 10px">
+							<div class="" id="mouseCoordX">0</div>
+							<div class="" id="mouseCoordZ">0</div>
+						</div>
+					</div>
+					<div>
+						<button class="btn btn-outline-secondary btn-sm" type="button" id="startPolygon">Start</button>
+						<b style="display: none" id="drawingPolygon">Drawing</b>
+						<div id="polygonCoords"></div>
 					</div>
 				</div>
 			</div>
@@ -136,9 +149,11 @@
 			$(document).ready(function () {
 				// markList:
 				// {"cfxfkebf8mh":{"id":"cfxfkebf8mh","type":"village","x":"10056","z":"-1384"},"j38xxqa26w":{"id":"j38xxqa26w","type":"village","x":"10056","z":"-888"},"02ldrjqqjmrf":{"id":"02ldrjqqjmrf","type":"village","x":"9560","z":"-392"},"n780jwlvmxb":{"id":"n780jwlvmxb","type":"village","x":"10120","z":"-344"},"hxjzfvbzeb":{"id":"hxjzfvbzeb","type":"village","x":"10424","z":"-152"},"fvyfu5480yj":{"id":"fvyfu5480yj","type":"village","x":"11112","z":"-856"},"zccxypcow6":{"id":"zccxypcow6","type":"village","x":"11144","z":"40"},"mgd6ox354fe":{"id":"mgd6ox354fe","type":"village","x":"9944","z":"248"},"spt7nxic8zt":{"id":"spt7nxic8zt","type":"village","x":"9336","z":"840"},"zwnw0a0y1d":{"id":"zwnw0a0y1d","type":"pillagerOutpost","x":"9592","z":"280"},"2q1i2mobd1e":{"id":"2q1i2mobd1e","type":"pillagerOutpost","x":"10952","z":"-872"},"jbc9f0kjgar":{"id":"jbc9f0kjgar","type":"ancientCity","x":"10072","z":"-1064"},"nod1qqltb18":{"id":"nod1qqltb18","type":"ancientCity","x":"10504","z":"-968"},"clb7j3cvidn":{"id":"clb7j3cvidn","type":"ancientCity","x":"9416","z":"-648"},"j8xg1v7cc2a":{"id":"j8xg1v7cc2a","type":"ancientCity","x":"9768","z":"-632"},"p30psop6rv":{"id":"p30psop6rv","type":"ancientCity","x":"10504","z":"-696"},"aa86a04ydge":{"id":"aa86a04ydge","type":"ancientCity","x":"10856","z":"-648"},"pxj6byq7itn":{"id":"pxj6byq7itn","type":"ancientCity","x":"10840","z":"-312"},"yejpvbpfk4j":{"id":"yejpvbpfk4j","type":"ancientCity","x":"11208","z":"-296"},"jiadv4ngg3":{"id":"jiadv4ngg3","type":"ancientCity","x":"10088","z":"472"},"ckciu954839":{"id":"ckciu954839","type":"ancientCity","x":"10152","z":"-696"},"diy1pphbs8f":{"id":"diy1pphbs8f","type":"shipwreck","x":"9048","z":"-904"},"4a5dz4jhnm8":{"id":"4a5dz4jhnm8","type":"shipwreck","x":"9128","z":"-1288"},"c3jbus6cvbs":{"id":"c3jbus6cvbs","type":"shipwreck","x":"9096","z":"-1704"},"gk13rcbpc5o":{"id":"gk13rcbpc5o","type":"shipwreck","x":"9288","z":"-1816"},"ylq6dxp4vvj":{"id":"ylq6dxp4vvj","type":"shipwreck","x":"9736","z":"-1864"},"vj5rru8sakr":{"id":"vj5rru8sakr","type":"shipwreck","x":"10088","z":"-1608"},"b2qnjaja774":{"id":"b2qnjaja774","type":"shipwreck","x":"9624","z":"424"},"2m62eud36jp":{"id":"2m62eud36jp","type":"shipwreck","x":"9496","z":"792"},"gjg01dez19e":{"id":"gjg01dez19e","type":"portal","x":"9192","z":"-1784"},"75jjufveom":{"id":"75jjufveom","type":"portal","x":"9800","z":"-1576"},"hb6y09adykh":{"id":"hb6y09adykh","type":"portal","x":"9256","z":"-1192"},"c8gbmhml46f":{"id":"c8gbmhml46f","type":"portal","x":"9688","z":"-1096"},"p1w0b8f15n8":{"id":"p1w0b8f15n8","type":"portal","x":"10440","z":"-1080"},"de14ijidym":{"id":"de14ijidym","type":"portal","x":"10936","z":"-1192"},"oxr3nadxwz":{"id":"oxr3nadxwz","type":"portal","x":"9064","z":"-264"},"ugignremz79":{"id":"ugignremz79","type":"portal","x":"9944","z":"-488"},"2qfm55h4ioq":{"id":"2qfm55h4ioq","type":"portal","x":"10328","z":"-520"},"ymbz3mc90zk":{"id":"ymbz3mc90zk","type":"portal","x":"10984","z":"-600"},"m1iptxef6pc":{"id":"m1iptxef6pc","type":"portal","x":"9256","z":"216"},"5b1462rxzs":{"id":"5b1462rxzs","type":"portal","x":"9736","z":"104"},"4r1asvglaau":{"id":"4r1asvglaau","type":"portal","x":"10280","z":"264"},"mx9aovfbek":{"id":"mx9aovfbek","type":"portal","x":"11080","z":"72"},"gszj4qml6z7":{"id":"gszj4qml6z7","type":"portal","x":"9304","z":"760"},"vr5xiqf1ip":{"id":"vr5xiqf1ip","type":"portal","x":"9896","z":"792"},"dd972ve5j3k":{"id":"dd972ve5j3k","type":"portal","x":"8632","z":"280"},"4risopt4hte":{"id":"4risopt4hte","type":"portal","x":"11192","z":"888"},"xyeppw824j":{"id":"xyeppw824j","type":"portal","x":"10360","z":"936"},"lzofohrd26n":{"id":"lzofohrd26n","type":"shipwreck","x":"10984","z":"952"},"8l26p3qrzyn":{"id":"8l26p3qrzyn","type":"smallRuin","x":"9096","z":"-1160"},"ajs0dq53ei":{"id":"ajs0dq53ei","type":"smallRuin","x":"9288","z":"-1256"},"pzwhztnlrm":{"id":"pzwhztnlrm","type":"smallRuin","x":"8968","z":"-1544"},"olqfe2kjurc":{"id":"olqfe2kjurc","type":"smallRuin","x":"9144","z":"-1896"},"cbqwj7gfbxl":{"id":"cbqwj7gfbxl","type":"largeRuin","x":"9336","z":"-1848"},"rjg17moyl5":{"id":"rjg17moyl5","type":"largeRuin","x":"9624","z":"-1784"},"y60cof8cnia":{"id":"y60cof8cnia","type":"smallRuin","x":"10040","z":"-1768"},"8tjjc3uyjow":{"id":"8tjjc3uyjow","type":"smallRuin","x":"10392","z":"-1496"},"i1nhyc6ujw8":{"id":"i1nhyc6ujw8","type":"smallRuin","x":"11016","z":"1064"},"dypqfmjo6ek":{"id":"dypqfmjo6ek","type":"largeRuin","x":"10568","z":"968"},"bwukou0qwsc":{"id":"bwukou0qwsc","type":"smallRuin","x":"9768","z":"792"},"u23sq2thi8":{"id":"u23sq2thi8","type":"smallRuin","x":"9736","z":"456"},"ipywof83tz":{"id":"ipywof83tz","type":"smallRuin","x":"9464","z":"728"},"2z7cjwwaxnl":{"id":"2z7cjwwaxnl","type":"smallRuin","x":"10744","z":"-1496"}}
+
 				// svgInfo:
 				// {"minX":"8143","maxX":"12034","minZ":"-2153","maxZ":"1215"}
-				console.log("--document.read--");
+
+				// console.log("--document.read--");
 				const listInfo = {
 					village: { label: "Village", color: "brown" },
 					ancientCity: { label: "Ancient City", color: "aqua" },
@@ -159,7 +174,39 @@
 						maxX: svgWindow.width,
 						minZ: 0,
 						maxZ: svgWindow.height,
-					};
+					},
+					isDrawing,
+					addingPoly = {},
+					mousePosX,
+					mousePosY,
+					mouseCoordX,
+					mouseCoordZ;
+
+				// ////////
+				// init
+				function init() {
+					// mark options
+					// console.log(":::initOptions:::");
+					Object.entries(listInfo).forEach(function ([val, { label }]) {
+						$("#markType").append($("<option></option>").val(val).text(label));
+					});
+
+					// minMax inputs
+					// console.log(":::initMinMax:::");
+					const loc = _getLocalStorage("svgInfo");
+					const minMaxDisplay = Object.entries(svgInfo).reduce(function (d, [k, v]) {
+						if (!loc[k]) updateMinMax(k, v);
+						d[k] = Number(loc[k]) ?? v;
+						return d;
+					}, {});
+					// console.log("minMaxDisplay: ", minMaxDisplay);
+					svgInfo = minMaxDisplay;
+					displayMinMax(minMaxDisplay);
+
+					// get svg size and display marks
+					getWindowSize();
+				}
+				init();
 
 				// ///////////
 				// helpers
@@ -175,14 +222,14 @@
 
 				// crud
 				function createMark(value) {
-					console.log("--createMark--");
+					// console.log("--createMark--");
 					const type = $("#markType").val(),
 						id = createID(),
 						oldList = _getLocalStorage("markList");
 
 					if (value && type && id) {
 						const valueSplit = value.split(" ");
-						console.log("valueSplit: ", valueSplit);
+						// console.log("valueSplit: ", valueSplit);
 
 						const newMark = {
 							id,
@@ -194,7 +241,7 @@
 							...oldList,
 							[id]: newMark,
 						};
-						console.log("newMark: ", newMark);
+						// console.log("newMark: ", newMark);
 
 						_setLocalStorage("markList", newList);
 
@@ -204,36 +251,18 @@
 					}
 				}
 				function createID() {
-					console.log("--createID--");
+					// console.log("--createID--");
 					return Math.random()
 						.toString(36)
 						.substring(2, 12 + 2);
 				}
 				function updateMinMax(name, value) {
-					console.log("--updateMinMax--");
+					// console.log("--updateMinMax--");
 					const oldList = _getLocalStorage("svgInfo");
 					const newList = { ...oldList, [name]: value };
 					svgInfo[name] = value;
-					console.log(name, ": ", value);
+					// console.log(name, ": ", value);
 					_setLocalStorage("svgInfo", newList);
-				}
-				function initMinMax() {
-					console.log(":::initMinMax:::");
-					const loc = _getLocalStorage("svgInfo");
-					const minMaxDisplay = Object.entries(svgInfo).reduce(function (d, [k, v]) {
-						if (!loc[k]) updateMinMax(k, v);
-						d[k] = loc[k] ?? v;
-						return d;
-					}, {});
-					console.log("minMaxDisplay: ", minMaxDisplay);
-					svgInfo = minMaxDisplay;
-					displayMinMax(minMaxDisplay);
-				}
-				function initOptions() {
-					console.log(":::initOptions:::");
-					Object.entries(listInfo).forEach(function ([val, { label }]) {
-						$("#markType").append($("<option></option>").val(val).text(label));
-					});
 				}
 
 				// //////////
@@ -241,21 +270,24 @@
 
 				// display
 				function displayMarks(marks = null) {
-					console.log("--displayMarks--");
+					// console.log("--displayMarks--");
 					if (!marks) marks = _getLocalStorage("markList");
 
 					// clear
 					$("#marks").html("");
 					$("#svg").html("");
 
-					Object.entries(marks).forEach(function ([key, { id, type, x, z }]) {
+					Object.entries(marks).forEach(function ([key, mark]) {
+						// console.log("mark: ", mark);
+						const { id, type, x, z } = mark;
+
 						// mark list
 						$("#marks").append(
 							$("<div id='" + id + "'></div>")
 								.append($("<div></div>").text(type))
 								.append($("<div></div>").text(x))
 								.append($("<div></div>").text(z))
-								.append($("<div></div>").append($("<button>X</button>")))
+								.append($("<div></div>").append($(`<button class="btn btn-outline-secondary btn-sm">X</button>`)))
 						);
 
 						// svg
@@ -263,14 +295,14 @@
 					});
 				}
 				function displayMinMax(minMaxDisplay) {
-					console.log("--displayMinMax--");
+					// console.log("--displayMinMax--");
 					if (!minMaxDisplay) minMaxDisplay = svgInfo;
 					Object.entries(minMaxDisplay).forEach(function ([k, v]) {
 						$("#" + k).val(v);
 					});
 				}
 				function getWindowSize() {
-					console.log("--getWindowSize--");
+					// console.log("--getWindowSize--");
 
 					svgWindow = {
 						height: Math.floor($("#svg").height()),
@@ -278,7 +310,7 @@
 						top: $("#svg").position().top,
 						left: $("#svg").position().left,
 					};
-					console.log("svgWindow: ", svgWindow);
+					// console.log("svgWindow: ", svgWindow);
 
 					// re-render
 					displayMarks();
@@ -286,7 +318,8 @@
 
 				// svg helpers
 				function rect(width, height, x, z, fill) {
-					console.log("width: ", width, " height: ", height, " x: ", x, " z: ", z, " fill: ", fill);
+					x = x - width / 2;
+					z = z - height / 2;
 					return `<rect width="${width}" height="${height}" x="${x}" y="${z}" fill="${fill}" />`;
 				}
 				function translateX(x) {
@@ -296,22 +329,12 @@
 					return Math.abs((z - svgInfo.minZ) / (svgInfo.maxZ - svgInfo.minZ)) * svgWindow.height;
 				}
 
-				// ////////
-				// init
-
-				// mark options
-				initOptions();
-				// minMax inputs
-				initMinMax();
-				// get svg size and display marks
-				getWindowSize();
-
 				// ///////////
 				// on handlers
 
 				// on enter
 				$("#newValue").on("keypress", function (e) {
-					console.log("--#newValue on keypress--");
+					// console.log("--#newValue on keypress--");
 					const v = e.target.value;
 					// if enter key
 					if (e.which == 13 && v) {
@@ -320,12 +343,12 @@
 				});
 				// on any key
 				$(".minMax").on("change click keyup input paste", function (e) {
-					console.log("--.minMax on change--");
+					// console.log("--.minMax on change--");
 					updateMinMax(e.target.name, e.target.value);
 				});
 				// on submit
 				$("#submit").on("click", function (e) {
-					console.log("--#submit on click--");
+					// console.log("--#submit on click--");
 					const v = $("#newValue").val();
 					if (v) createMark(v);
 				});
@@ -337,8 +360,28 @@
 
 				// mouse over
 				$("#svg").on("mousemove", function (event) {
-					$("#mousePosX").text(event.pageX - svgWindow.left + Number(svgInfo.minX));
-					$("#mousePosZ").text(event.pageY - svgWindow.top + Number(svgInfo.minZ));
+					mousePosX = Math.floor(event.pageX - svgWindow.left);
+					mousePosY = Math.floor(event.pageY - svgWindow.top);
+					$("#mousePosX").text(mousePosX);
+					$("#mousePosY").text(mousePosY);
+
+					mouseCoordX = Math.floor((mousePosX / svgWindow.width) * Math.abs(svgInfo.maxX - svgInfo.minX) + svgInfo.minX);
+					mouseCoordZ = Math.floor((mousePosY / svgWindow.height) * Math.abs(svgInfo.maxZ - svgInfo.minZ) + svgInfo.minZ);
+					$("#mouseCoordX").text(mouseCoordX);
+					$("#mouseCoordZ").text(mouseCoordZ);
+				});
+
+				// draw polygon
+				$("#startPolygon").on("click", function () {
+					isDrawing = true;
+					$(this).hide();
+					$("#drawingPolygon").show();
+				});
+				$("#svg").on("click", function () {
+					if (isDrawing) {
+						addingPoly[Object.keys(addingPoly).length] = { x: mouseCoordX, z: mouseCoordZ };
+						$("#polygonCoords").html($("#polygonCoords").html() + `<p>${mouseCoordX} ${mouseCoordZ}</p>`);
+					}
 				});
 			});
 		</script>
