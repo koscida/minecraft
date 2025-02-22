@@ -26,9 +26,28 @@
 		></script>
 
 		<style>
-			.marks > div {
+			.marks > * {
 				display: grid;
-				grid-template-columns: 4fr 2fr 2fr 1fr;
+				grid-template-columns: 15px 4fr 2fr 2fr 1fr;
+			}
+			.marks > * > *:first-child {
+				width: 10px;
+				display: block;
+			}
+
+			.polys > * {
+				display: grid;
+				grid-template-columns: 15px 4fr 1fr;
+				align-items: center;
+			}
+			.polys > * > *:first-child {
+				width: 10px;
+				display: block;
+				height: 100%;
+			}
+			.polys > * > *:nth-child(2) {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
 			}
 
 			.svgWrapper {
@@ -53,6 +72,7 @@
 				top: 0;
 				left: 0;
 				z-index: 1;
+				opacity: 0.5;
 			}
 		</style>
 	</head>
@@ -62,25 +82,28 @@
 				<div class="col-3">
 					<div class="row gy-3 gx-2 mb-1 align-items-center">
 						<div class="col-1"><b>&nbsp;</b></div>
-						<div class="col-5"><b>Min</b></div>
-						<div class="col-5"><b>Max</b></div>
+						<div class="col-5"><b>X</b></div>
+						<div class="col-5"><b>Z</b></div>
 					</div>
 					<div class="row gy-3 gx-2 mb-1 align-items-center">
-						<div class="col-1"><b>X</b></div>
-						<!-- Text Input -->
+						<div class="col-1">
+							<b>Min</b>
+						</div>
 						<div class="col-5">
 							<input type="number" id="minX" name="minX" class="form-control-sm minMax" />
 						</div>
 						<div class="col-5">
-							<input type="number" id="maxX" name="maxX" class="form-control-sm minMax" />
+							<input type="number" id="minZ" name="minZ" class="form-control-sm minMax" />
 						</div>
 					</div>
 					<div class="row gy-3 gx-2 mb-2 align-items-center">
-						<div class="col-1"><b>Z</b></div>
-						<!-- Text Input -->
-						<div class="col-5">
-							<input type="number" id="minZ" name="minZ" class="form-control-sm minMax" />
+						<div class="col-1">
+							<b>Max</b>
 						</div>
+						<div class="col-5">
+							<input type="number" id="maxX" name="maxX" class="form-control-sm minMax" />
+						</div>
+
 						<div class="col-5">
 							<input type="number" id="maxZ" name="maxZ" class="form-control-sm minMax" />
 						</div>
@@ -107,9 +130,9 @@
 
 					<div id="coords" class="coords">
 						<div class="marks">
-							<div><b>Type</b><b>X</b><b>Z</b><b>&nbsp;</b></div>
+							<div><span>&nbsp;</span><b>Type</b><b>X</b><b>Z</b><b>&nbsp;</b></div>
 						</div>
-						<div id="marks" class="marks"></div>
+						<div id="marksTable" class="marks"></div>
 					</div>
 				</div>
 				<div class="col-6">
@@ -137,8 +160,19 @@
 					</div>
 					<div>
 						<button class="btn btn-outline-secondary btn-sm" type="button" id="startPolygon">Start</button>
-						<b style="display: none" id="drawingPolygon">Drawing</b>
-						<div id="polygonCoords"></div>
+						<div id="saveCancel" style="display: none">
+							<b id="status"></b>
+							<button class="btn btn-outline-secondary btn-sm" type="button" id="savePolygon">Save</button>
+							<button class="btn btn-outline-secondary btn-sm" type="button" id="cancelPolygon">Cancel</button>
+							<input type="color" id="polyColor" value="#FFFFFF" />
+							<div id="polygonCoords"></div>
+						</div>
+						<div id="polys">
+							<div class="polys">
+								<div><span>&nbsp;</span><span><b>X</b><b>Z</b></span><b>&nbsp;</b></div>
+							</div>
+							<div id="polyTable" class="polys"></div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -154,7 +188,7 @@
 				// {"minX":"8143","maxX":"12034","minZ":"-2153","maxZ":"1215"}
 
 				// console.log("--document.read--");
-				const listInfo = {
+				const markTypes = {
 					village: { label: "Village", color: "brown" },
 					ancientCity: { label: "Ancient City", color: "aqua" },
 					pillagerOutpost: { label: "Pillager Outpost", color: "maroon" },
@@ -163,7 +197,8 @@
 					largeRuin: { label: "Large Ruin", color: "yellow" },
 					shipwreck: { label: "Shipwreck", color: "chocolate" },
 				};
-				var svgWindow = {
+				var status = { isDrawing: false },
+					svgWindow = {
 						width: 100,
 						height: 100,
 						left: 0,
@@ -175,19 +210,27 @@
 						minZ: 0,
 						maxZ: svgWindow.height,
 					},
-					isDrawing,
 					addingPoly = {},
 					mousePosX,
 					mousePosY,
 					mouseCoordX,
 					mouseCoordZ;
+				const marksTableEle = $("#marksTable"),
+					svgEle = $("#svg"),
+					statusEle = $("#status"),
+					startPolygonEle = $("#startPolygon"),
+					saveCancelEle = $("#saveCancel"),
+					savePolygonEle = $("#savePolygon"),
+					polyColorEle = $("#polyColor"),
+					cancelPolygonEle = $("#cancelPolygon"),
+					polyTableEle = $("#polyTable");
 
 				// ////////
 				// init
 				function init() {
 					// mark options
 					// console.log(":::initOptions:::");
-					Object.entries(listInfo).forEach(function ([val, { label }]) {
+					Object.entries(markTypes).forEach(function ([val, { label }]) {
 						$("#markType").append($("<option></option>").val(val).text(label));
 					});
 
@@ -227,9 +270,12 @@
 						id = createID(),
 						oldList = _getLocalStorage("markList");
 
+					// validate
 					if (value && type && id) {
 						const valueSplit = value.split(" ");
 						// console.log("valueSplit: ", valueSplit);
+
+						// TODO: check if mark already exists in list before adding to the list
 
 						const newMark = {
 							id,
@@ -264,6 +310,41 @@
 					// console.log(name, ": ", value);
 					_setLocalStorage("svgInfo", newList);
 				}
+				function updateStatus(name, value) {
+					status[name] = value;
+					statusEle.html(name);
+					statusEle.show();
+				}
+				function updateAddingPoly() {
+					addingPoly[Object.keys(addingPoly).length] = { x: mouseCoordX, z: mouseCoordZ };
+					$("#polygonCoords").html($("#polygonCoords").html() + `${mouseCoordX} ${mouseCoordZ}<br/>`);
+
+					displayPoly(addingPoly);
+				}
+				function createPoly() {
+					const oldList = _getLocalStorage("polyList"),
+						id = createID(),
+						color = polyColorEle.val();
+
+					// validate
+					if (addingPoly && id) {
+						const newPoly = {
+							id,
+							coords: addingPoly,
+							color,
+						};
+						const newList = {
+							...oldList,
+							[id]: newPoly,
+						};
+						// add to list
+						_setLocalStorage("polyList", newList);
+						// re-render
+						displayPoly(newList);
+						// re-start drawing
+						displayDrawingPoly(false);
+					}
+				}
 
 				// //////////
 				// Render
@@ -274,24 +355,27 @@
 					if (!marks) marks = _getLocalStorage("markList");
 
 					// clear
-					$("#marks").html("");
-					$("#svg").html("");
+					marksTableEle.html("");
+					svgEle.html("");
 
 					Object.entries(marks).forEach(function ([key, mark]) {
 						// console.log("mark: ", mark);
 						const { id, type, x, z } = mark;
 
-						// mark list
-						$("#marks").append(
-							$("<div id='" + id + "'></div>")
-								.append($("<div></div>").text(type))
-								.append($("<div></div>").text(x))
-								.append($("<div></div>").text(z))
-								.append($("<div></div>").append($(`<button class="btn btn-outline-secondary btn-sm">X</button>`)))
+						// mark table
+						marksTableEle.append(
+							$(`<div>`, {
+								id,
+							})
+								.append($("<div>", { style: `background:${markTypes[type].color};` }))
+								.append($("<div>").text(markTypes[type].label))
+								.append($("<div>").text(x))
+								.append($("<div>").text(z))
+								.append($("<div>").append($(`<button>`, { class: "btn btn-outline-secondary btn-sm" }).text("X")))
 						);
 
 						// svg
-						$("#svg").html($("#svg").html() + rect(10, 10, translateX(x), translateZ(z), listInfo[type].color));
+						svgEle.html(svgEle.html() + _genRect(10, 10, x, z, markTypes[type].color));
 					});
 				}
 				function displayMinMax(minMaxDisplay) {
@@ -301,32 +385,90 @@
 						$("#" + k).val(v);
 					});
 				}
+				function displayPoly(poly = null) {
+					if (!poly) poly = _getLocalStorage("polyList");
+
+					// if addingPoly
+					if (poly[0]) {
+						console.log("poly[0]: ", poly);
+						svgEle.html(svgEle.html() + _genPoly(poly, polyColorEle.val()));
+					}
+					// else polyList
+					else {
+						Object.entries(poly).forEach(function ([id, { coords, color }]) {
+							// svg poly
+							svgEle.html(svgEle.html() + _genPoly(coords, color));
+
+							// poly table
+							polyTableEle.append(
+								$(`<div>`, {
+									id,
+									class:"mb-2"
+								})
+									.append($("<div>", { style: `background:${color};` }))
+									.append(
+										Object.entries(coords).reduce(function (c, [k, { x, z }], i) {
+											c.append($("<div>").append($("<div>").text(x)).append($("<div>").text(z)));
+											return c;
+										}, $("<div>"))
+									)
+									.append($("<div>").append($(`<button>`, { class: "btn btn-outline-secondary btn-sm" }).text("X")))
+							);
+						});
+					}
+				}
 				function getWindowSize() {
 					// console.log("--getWindowSize--");
 
 					svgWindow = {
-						height: Math.floor($("#svg").height()),
-						width: Math.floor(Math.floor($("#svg").height()) * (974 / 842)),
-						top: $("#svg").position().top,
-						left: $("#svg").position().left,
+						height: Math.floor(svgEle.height()),
+						width: Math.floor(Math.floor(svgEle.height()) * (974 / 842)),
+						top: svgEle.position().top,
+						left: svgEle.position().left,
 					};
 					// console.log("svgWindow: ", svgWindow);
 
 					// re-render
+					reRender();
+				}
+				function reRender() {
 					displayMarks();
+					displayPoly();
+				}
+
+				function displayDrawingPoly(isOn) {
+					if (isOn) {
+						updateStatus("isDrawing", true);
+						saveCancelEle.show();
+						startPolygonEle.hide();
+					} else {
+						updateStatus("isDrawing", false);
+						saveCancelEle.hide();
+						startPolygonEle.show();
+					}
+					reRender();
 				}
 
 				// svg helpers
-				function rect(width, height, x, z, fill) {
-					x = x - width / 2;
-					z = z - height / 2;
+				function _genRect(width, height, x, z, fill) {
+					x = _translateX(x) - width / 2;
+					z = _translateZ(z) - height / 2;
 					return `<rect width="${width}" height="${height}" x="${x}" y="${z}" fill="${fill}" />`;
 				}
-				function translateX(x) {
-					return Math.abs((x - svgInfo.minX) / (svgInfo.maxX - svgInfo.minX)) * svgWindow.width;
+				function _genPoly(polyCoords, color = "white") {
+					let coords = Object.entries(polyCoords).reduce(function (s, [k, { x, z }], i) {
+						x = _translateX(x);
+						z = _translateZ(z);
+						return s + `${x},${z} `;
+					}, "");
+					// console.log("coords: ", coords);
+					return `<polygon points="${coords}" fill="${color}" />`;
 				}
-				function translateZ(z) {
-					return Math.abs((z - svgInfo.minZ) / (svgInfo.maxZ - svgInfo.minZ)) * svgWindow.height;
+				function _translateX(x) {
+					return Math.round(Math.abs((x - svgInfo.minX) / (svgInfo.maxX - svgInfo.minX)) * svgWindow.width);
+				}
+				function _translateZ(z) {
+					return Math.round(Math.abs((z - svgInfo.minZ) / (svgInfo.maxZ - svgInfo.minZ)) * svgWindow.height);
 				}
 
 				// ///////////
@@ -359,7 +501,7 @@
 				});
 
 				// mouse over
-				$("#svg").on("mousemove", function (event) {
+				svgEle.on("mousemove", function (event) {
 					mousePosX = Math.floor(event.pageX - svgWindow.left);
 					mousePosY = Math.floor(event.pageY - svgWindow.top);
 					$("#mousePosX").text(mousePosX);
@@ -372,16 +514,23 @@
 				});
 
 				// draw polygon
-				$("#startPolygon").on("click", function () {
-					isDrawing = true;
-					$(this).hide();
-					$("#drawingPolygon").show();
+				startPolygonEle.on("click", function () {
+					displayDrawingPoly(true);
 				});
-				$("#svg").on("click", function () {
-					if (isDrawing) {
-						addingPoly[Object.keys(addingPoly).length] = { x: mouseCoordX, z: mouseCoordZ };
-						$("#polygonCoords").html($("#polygonCoords").html() + `<p>${mouseCoordX} ${mouseCoordZ}</p>`);
+				svgEle.on("click", function () {
+					if (status.isDrawing) {
+						updateAddingPoly();
 					}
+				});
+				savePolygonEle.on("click", function () {
+					createPoly();
+				});
+				cancelPolygonEle.on("click", function () {
+					displayDrawingPoly(false);
+				});
+				polyColorEle.on("change", function () {
+					console.log("polyColorEle on");
+					displayPoly(addingPoly);
 				});
 			});
 		</script>
