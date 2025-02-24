@@ -29,6 +29,10 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
 		<style>
+			.form-control-sm {
+				width: 100%;
+			}
+
 			.marks > * {
 				display: grid;
 				grid-template-columns: 15px 4fr 2fr 2fr 2fr;
@@ -98,12 +102,12 @@
 			<div class="row">
 				<div class="col-3">
 					<div class="row gy-3 gx-2 mb-1 align-items-center">
-						<div class="col-1"><b>&nbsp;</b></div>
+						<div class="col-2"><b>&nbsp;</b></div>
 						<div class="col-5"><b>X</b></div>
 						<div class="col-5"><b>Z</b></div>
 					</div>
 					<div class="row gy-3 gx-2 mb-1 align-items-center">
-						<div class="col-1">
+						<div class="col-2">
 							<b>Min</b>
 						</div>
 						<div class="col-5">
@@ -114,7 +118,7 @@
 						</div>
 					</div>
 					<div class="row gy-3 gx-2 mb-2 align-items-center">
-						<div class="col-1">
+						<div class="col-2">
 							<b>Max</b>
 						</div>
 						<div class="col-5">
@@ -128,18 +132,20 @@
 
 					<hr />
 
+					<div class="mb-2">
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="showMarks" checked />
+							<label class="form-check-label" for="showMarks">Show Marks</label>
+						</div>
+					</div>
+
 					<div class="row gy-3 gx-2 mb-2 align-items-center">
-						<!-- Text Input -->
 						<div class="col-6">
 							<input type="text" id="newValue" class="form-control-sm" />
 						</div>
-
-						<!-- Type DropDown -->
 						<div class="col-4">
 							<select id="markType" class="form-select form-select-sm" aria-label=".form-select-sm mark-type"></select>
 						</div>
-
-						<!-- Submit Button -->
 						<div class="col-2">
 							<button class="btn btn-outline-secondary btn-sm" type="button" id="submit">Add</button>
 						</div>
@@ -163,6 +169,7 @@
 						<img src="./images/cherry.png" alt="background image" class="svgBackground" />
 					</div>
 				</div>
+
 				<div class="col-3">
 					<div class="d-flex flex-row align-items-center gx-3" style="gap: 10px">
 						<b>Position: </b>
@@ -176,6 +183,16 @@
 							<div class="" id="mouseCoordZ">0</div>
 						</div>
 					</div>
+
+					<hr />
+
+					<div class="mb-2">
+						<div class="form-check form-switch">
+							<input class="form-check-input" type="checkbox" id="showPolys" checked />
+							<label class="form-check-label" for="showPolys">Show Polys</label>
+						</div>
+					</div>
+
 					<div>
 						<div class="mb-2">
 							<button class="btn btn-outline-secondary btn-sm" type="button" id="startPolygon">Start</button>
@@ -211,7 +228,7 @@
 				// {"minX":"8143","maxX":"12034","minZ":"-2153","maxZ":"1215"}
 
 				// polyList
-				// {"3ecqx5ni0ty":{"id":"3ecqx5ni0ty","coords":{"0":{"x":9728,"z":-894},"1":{"x":9813,"z":-930},"2":{"x":9843,"z":-900},"3":{"x":9916,"z":-918},"4":{"x":9934,"z":-942},"5":{"x":9970,"z":-972},"6":{"x":9946,"z":-1003},"7":{"x":9958,"z":-1027},"8":{"x":9970,"z":-1051},"9":{"x":9952,"z":-1063},"10":{"x":9952,"z":-1118},"11":{"x":9982,"z":-1148},"12":{"x":10055,"z":-1124},"13":{"x":10121,"z":-1178},"14":{"x":10164,"z":-1148},"15":{"x":10145,"z":-1099},"16":{"x":10127,"z":-1075},"17":{"x":10133,"z":-1021},"18":{"x":10121,"z":-966},"19":{"x":10115,"z":-912},"20":{"x":10012,"z":-924},"21":{"x":9946,"z":-924},"22":{"x":9916,"z":-887},"23":{"x":9843,"z":-869},"24":{"x":9795,"z":-857},"25":{"x":9758,"z":-845}},"color":"#ffffff"},"q5dmzt0dt0m":{"id":"q5dmzt0dt0m","coords":{"0":{"x":10212,"z":-997},"1":{"x":10218,"z":-1063},"2":{"x":10291,"z":-1154},"3":{"x":10315,"z":-1215},"4":{"x":10357,"z":-1196},"5":{"x":10448,"z":-1263},"6":{"x":10466,"z":-1251},"7":{"x":10490,"z":-1318},"8":{"x":10569,"z":-1215},"9":{"x":10593,"z":-1221},"10":{"x":10617,"z":-1221},"11":{"x":10690,"z":-1233},"12":{"x":10708,"z":-1190},"13":{"x":10745,"z":-1184},"14":{"x":10769,"z":-1130},"15":{"x":10775,"z":-1081},"16":{"x":10714,"z":-1027},"17":{"x":10648,"z":-1075},"18":{"x":10569,"z":-1093},"19":{"x":10496,"z":-1118},"20":{"x":10424,"z":-1087},"21":{"x":10333,"z":-1045},"22":{"x":10291,"z":-978},"23":{"x":10218,"z":-990}},"color":"#ffffff"},"6vttlsh22yb":{"id":"6vttlsh22yb","coords":{"0":{"x":10430,"z":-512},"1":{"x":10496,"z":-476},"2":{"x":10503,"z":-421},"3":{"x":10563,"z":-342},"4":{"x":10533,"z":-306},"5":{"x":10490,"z":-282},"6":{"x":10454,"z":-251},"7":{"x":10375,"z":-257},"8":{"x":10351,"z":-288},"9":{"x":10351,"z":-348},"10":{"x":10339,"z":-385},"11":{"x":10369,"z":-457}},"color":"#ffffff"},"f7m5cpnto16":{"id":"f7m5cpnto16","coords":{"0":{"x":10067,"z":-185},"1":{"x":10079,"z":-136},"2":{"x":10121,"z":-94},"3":{"x":10170,"z":-70},"4":{"x":10188,"z":-9},"5":{"x":10024,"z":45},"6":{"x":9970,"z":27},"7":{"x":9934,"z":51},"8":{"x":9849,"z":-9},"9":{"x":9885,"z":-94},"10":{"x":9982,"z":-155},"11":{"x":9946,"z":-136},"12":{"x":9994,"z":-167}},"color":"#ffffff"},"gr9p9vh1ext":{"id":"gr9p9vh1ext","coords":{"0":{"x":9371,"z":-348},"1":{"x":9498,"z":-264},"2":{"x":9510,"z":-185},"3":{"x":9468,"z":-142},"4":{"x":9474,"z":-106},"5":{"x":9504,"z":-76},"6":{"x":9552,"z":-100},"7":{"x":9595,"z":-88},"8":{"x":9704,"z":9},"9":{"x":9734,"z":130},"10":{"x":9704,"z":173},"11":{"x":9631,"z":239},"12":{"x":9595,"z":203},"13":{"x":9613,"z":136},"14":{"x":9571,"z":94},"15":{"x":9444,"z":70},"16":{"x":9389,"z":-88},"17":{"x":9353,"z":-106},"18":{"x":9316,"z":-221},"19":{"x":9329,"z":-312},"20":{"x":9359,"z":-348}},"color":"#ffffff"}}
+				// {"3ecqx5ni0ty":{"id":"3ecqx5ni0ty","coords":{"0":{"x":9728,"z":-894},"1":{"x":9813,"z":-930},"2":{"x":9843,"z":-900},"3":{"x":9916,"z":-918},"4":{"x":9934,"z":-942},"5":{"x":9970,"z":-972},"6":{"x":9946,"z":-1003},"7":{"x":9958,"z":-1027},"8":{"x":9970,"z":-1051},"9":{"x":9952,"z":-1063},"10":{"x":9952,"z":-1118},"11":{"x":9982,"z":-1148},"12":{"x":10055,"z":-1124},"13":{"x":10121,"z":-1178},"14":{"x":10164,"z":-1148},"15":{"x":10145,"z":-1099},"16":{"x":10127,"z":-1075},"17":{"x":10133,"z":-1021},"18":{"x":10121,"z":-966},"19":{"x":10115,"z":-912},"20":{"x":10012,"z":-924},"21":{"x":9946,"z":-924},"22":{"x":9916,"z":-887},"23":{"x":9843,"z":-869},"24":{"x":9795,"z":-857},"25":{"x":9758,"z":-845}},"color":"#818181"},"q5dmzt0dt0m":{"id":"q5dmzt0dt0m","coords":{"0":{"x":10212,"z":-997},"1":{"x":10218,"z":-1063},"2":{"x":10291,"z":-1154},"3":{"x":10315,"z":-1215},"4":{"x":10357,"z":-1196},"5":{"x":10448,"z":-1263},"6":{"x":10466,"z":-1251},"7":{"x":10490,"z":-1318},"8":{"x":10569,"z":-1215},"9":{"x":10593,"z":-1221},"10":{"x":10617,"z":-1221},"11":{"x":10690,"z":-1233},"12":{"x":10708,"z":-1190},"13":{"x":10745,"z":-1184},"14":{"x":10769,"z":-1130},"15":{"x":10775,"z":-1081},"16":{"x":10714,"z":-1027},"17":{"x":10648,"z":-1075},"18":{"x":10569,"z":-1093},"19":{"x":10496,"z":-1118},"20":{"x":10424,"z":-1087},"21":{"x":10333,"z":-1045},"22":{"x":10291,"z":-978},"23":{"x":10218,"z":-990}},"color":"#818181"},"6vttlsh22yb":{"id":"6vttlsh22yb","coords":{"0":{"x":10430,"z":-512},"1":{"x":10496,"z":-476},"2":{"x":10503,"z":-421},"3":{"x":10563,"z":-342},"4":{"x":10533,"z":-306},"5":{"x":10490,"z":-282},"6":{"x":10454,"z":-251},"7":{"x":10375,"z":-257},"8":{"x":10351,"z":-288},"9":{"x":10351,"z":-348},"10":{"x":10339,"z":-385},"11":{"x":10369,"z":-457}},"color":"#818181"},"f7m5cpnto16":{"id":"f7m5cpnto16","coords":{"0":{"x":10067,"z":-185},"1":{"x":10079,"z":-136},"2":{"x":10121,"z":-94},"3":{"x":10170,"z":-70},"4":{"x":10188,"z":-9},"5":{"x":10024,"z":45},"6":{"x":9970,"z":27},"7":{"x":9934,"z":51},"8":{"x":9849,"z":-9},"9":{"x":9885,"z":-94},"10":{"x":9982,"z":-155},"11":{"x":9946,"z":-136},"12":{"x":9994,"z":-167}},"color":"#818181"},"gr9p9vh1ext":{"id":"gr9p9vh1ext","coords":{"0":{"x":9371,"z":-348},"1":{"x":9498,"z":-264},"2":{"x":9510,"z":-185},"3":{"x":9468,"z":-142},"4":{"x":9474,"z":-106},"5":{"x":9504,"z":-76},"6":{"x":9552,"z":-100},"7":{"x":9595,"z":-88},"8":{"x":9704,"z":9},"9":{"x":9734,"z":130},"10":{"x":9704,"z":173},"11":{"x":9631,"z":239},"12":{"x":9595,"z":203},"13":{"x":9613,"z":136},"14":{"x":9571,"z":94},"15":{"x":9444,"z":70},"16":{"x":9389,"z":-88},"17":{"x":9353,"z":-106},"18":{"x":9316,"z":-221},"19":{"x":9329,"z":-312},"20":{"x":9359,"z":-348}},"color":"#818181"},"86zy2c367a3":{"id":"86zy2c367a3","coords":{"0":{"x":9416,"z":85},"1":{"x":9446,"z":270},"2":{"x":9405,"z":352},"3":{"x":9344,"z":373},"4":{"x":9292,"z":342},"5":{"x":9303,"z":229},"6":{"x":9344,"z":177},"7":{"x":9364,"z":106}},"color":"#808080"},"u732jdvcuv":{"id":"u732jdvcuv","coords":{"0":{"x":10350,"z":-829},"1":{"x":10370,"z":-716},"2":{"x":10555,"z":-675},"3":{"x":10555,"z":-624},"4":{"x":10463,"z":-603},"5":{"x":10452,"z":-665},"6":{"x":10350,"z":-634},"7":{"x":10288,"z":-634},"8":{"x":10186,"z":-603},"9":{"x":10155,"z":-572},"10":{"x":10103,"z":-634},"11":{"x":10175,"z":-767},"12":{"x":10268,"z":-767},"13":{"x":10309,"z":-829}},"color":"#808080"},"vxykj1hlwd":{"id":"vxykj1hlwd","coords":{"0":{"x":9970,"z":-469},"1":{"x":10021,"z":-428},"2":{"x":10021,"z":-346},"3":{"x":9970,"z":-326},"4":{"x":9888,"z":-367},"5":{"x":9847,"z":-428},"6":{"x":9878,"z":-469},"7":{"x":9919,"z":-490}},"color":"#808080"},"oon7n74kw9h":{"id":"oon7n74kw9h","coords":{"0":{"x":10678,"z":-315},"1":{"x":10760,"z":-315},"2":{"x":10884,"z":-428},"3":{"x":10966,"z":-469},"4":{"x":11058,"z":-367},"5":{"x":11017,"z":-326},"6":{"x":10853,"z":-213},"7":{"x":10802,"z":-213},"8":{"x":10760,"z":-274},"9":{"x":10730,"z":-264}},"color":"#808080"},"sksdcc5b9tm":{"id":"sksdcc5b9tm","coords":{"0":{"x":9272,"z":-675},"1":{"x":9364,"z":-695},"2":{"x":9436,"z":-613},"3":{"x":9405,"z":-552},"4":{"x":9344,"z":-541},"5":{"x":9303,"z":-582},"6":{"x":9251,"z":-572},"7":{"x":9200,"z":-572},"8":{"x":9251,"z":-654},"9":{"x":9241,"z":-685},"10":{"x":9169,"z":-685},"11":{"x":9200,"z":-757},"12":{"x":9282,"z":-685}},"color":"#808080"},"stztxe0lq5g":{"id":"stztxe0lq5g","coords":{"0":{"x":9724,"z":-377},"1":{"x":9734,"z":-295},"2":{"x":9652,"z":-315},"3":{"x":9652,"z":-346},"4":{"x":9693,"z":-377}},"color":"#808080"},"xad4059i0f":{"id":"xad4059i0f","coords":{"0":{"x":9908,"z":434},"1":{"x":9980,"z":444},"2":{"x":10144,"z":331},"3":{"x":10227,"z":414},"4":{"x":10093,"z":465},"5":{"x":10011,"z":485}},"color":"#808080"}}
 
 				// console.log("--document.read--");
 				const markStorage = "markList",
@@ -226,7 +243,7 @@
 						largeRuin: { label: "Large Ruin", color: "yellow" },
 						shipwreck: { label: "Shipwreck", color: "chocolate" },
 					};
-				var status = { isDrawing: false, isEditingMark: false, isEditingPoly: false, editingId: 0 },
+				var status = { isDrawing: false, isEditingMark: false, isEditingPoly: false, editingId: 0, showMarks: true, showPolys: true },
 					svgWindow = {
 						width: 100,
 						height: 100,
@@ -259,25 +276,27 @@
 				// init
 				function init() {
 					// mark options
-					// console.log(":::initOptions:::");
 					Object.entries(markTypes).forEach(function ([val, { label }]) {
 						$("#markType").append($("<option></option>").val(val).text(label));
 					});
 
 					// minMax inputs
-					// console.log(":::initMinMax:::");
 					const loc = _getStorage(svgStorage);
 					const minMaxDisplay = Object.entries(svgInfo).reduce(function (d, [k, v]) {
 						if (!loc[k]) updateMinMax(k, v);
 						d[k] = Number(loc[k]) ?? v;
 						return d;
 					}, {});
-					// console.log("minMaxDisplay: ", minMaxDisplay);
 					svgInfo = minMaxDisplay;
 					displayMinMax(minMaxDisplay);
 
 					// get svg size and display marks
 					getWindowSize();
+
+					// status
+					// console.log("status.showMarks: ", status.showMarks, " $(#showMarks): ", $("#showMarks"));
+					$("#showMarks").attr("checked", status.showMarks ? "checked" : "");
+					$("#showPolys").attr("checked", status.showPolys ? "checked" : "");
 				}
 				init();
 
@@ -312,7 +331,6 @@
 						.toString(36)
 						.substring(2, 12 + 2);
 				}
-
 				// min max
 				function updateMinMax(name, value) {
 					// console.log("--updateMinMax--");
@@ -322,7 +340,6 @@
 					// console.log(name, ": ", value);
 					_setStorage(svgStorage, newList);
 				}
-
 				// mark
 				function createMark(value) {
 					// console.log("--createMark--");
@@ -364,7 +381,6 @@
 					const newList = _genericDelete(markStorage, id);
 					reRender({ marks: newList });
 				}
-
 				// poly
 				function updateAddingPoly() {
 					addingPoly[Object.keys(addingPoly).length] = { x: mouseCoordX, z: mouseCoordZ };
@@ -403,16 +419,17 @@
 					}
 				}
 				function deletePoly(id) {
-					console.log("deletePoly id: ", id);
+					// console.log("deletePoly id: ", id);
 					const newList = _genericDelete(polyStorage, id);
 					reRender({ poly: newList });
 				}
-				function editPoly(id) {
+				function editPoly() {
 					const oldList = _getStorage(polyStorage),
-						color = $("#editPolyColor").val();
-
+						id = status.editingId;
+					color = $("#editPolyColor").val();
+					console.log("editPoly id: ", id, " color: ", color);
 					// validate
-					if (addingPoly && id) {
+					if (id && color && oldList[id]) {
 						const newPoly = {
 							...oldList[id],
 							color,
@@ -438,6 +455,13 @@
 				function updateStatusEditPoly(id) {
 					status.isEditingPoly = true;
 					status.editingId = id;
+					reRender();
+				}
+				function updateStatusSavePoly(id) {
+					editPoly();
+
+					status.isEditingPoly = false;
+					status.editingId = "";
 					reRender();
 				}
 
@@ -475,7 +499,7 @@
 						);
 
 						// svg
-						svgEle.html(svgEle.html() + _genRect(10, 10, x, z, markTypes[type].color));
+						if (status.showMarks) svgEle.html(svgEle.html() + _genRect(10, 10, x, z, markTypes[type].color));
 					});
 				}
 				function displayMinMax(minMaxDisplay) {
@@ -497,8 +521,7 @@
 					else {
 						polyTableEle.html("");
 						Object.entries(poly).forEach(function ([id, { coords, color }]) {
-							// svg poly
-							svgEle.html(svgEle.html() + _genPoly(coords, color));
+							const delBtn = $(`<i>`, { class: "fa fa-trash deletePoly", "data-polyid": id, "aria-hidden": "true" });
 
 							// poly table
 							polyTableEle.append(
@@ -515,12 +538,18 @@
 									)
 									.append(
 										status.isEditingPoly && id === status.editingId
-											? $("<input>", { type: "color", value: color, id: "editPolyColor" })
+											? $("<div>")
+													.append($("<input>", { type: "color", value: color, id: "editPolyColor", "aria-hidden": "true" }))
+													.append($(`<i>`, { class: "fa fa-save savePoly", "data-polyid": id, "aria-hidden": "true" }))
+													.append(delBtn)
 											: $("<div>")
-													.append($(`<i>`, { class: "fa fa-trash deletePoly", "data-polyid": id, "aria-hidden": "true" }))
+													.append(delBtn)
 													.append($(`<i>`, { class: "fa fa-pencil editPoly", "data-polyid": id, "aria-hidden": "true" }))
 									)
 							);
+
+							// svg poly
+							if (status.showPolys) svgEle.html(svgEle.html() + _genPoly(coords, color));
 						});
 					}
 				}
@@ -608,6 +637,12 @@
 				$(document).on("click", ".deleteMark", function () {
 					deleteMark($(this).data("markid"));
 				});
+				// show marks
+				$("#showMarks").click(function () {
+					status.showMarks = !status.showMarks;
+					$(this).attr("checked", status.showMarks ? "checked" : "");
+					reRender();
+				});
 
 				// window resize
 				$(window).on("resize", function () {
@@ -657,8 +692,17 @@
 				$(document).on("click", ".editPoly", function () {
 					updateStatusEditPoly($(this).data("polyid"));
 				});
-				$(document).on("click", "#editPolyColor", function () {
-					editPoly($(this).data("polyid"));
+				$(document).on("change", "#editPolyColor", function () {
+					editPoly();
+				});
+				$(document).on("click", ".savePoly", function () {
+					updateStatusSavePoly($(this).data("polyid"));
+				});
+				// show poly
+				$("#showPolys").click(function () {
+					status.showPolys = !status.showPolys;
+					$(this).attr("checked", status.showPolys ? "checked" : "");
+					reRender();
 				});
 			});
 		</script>
