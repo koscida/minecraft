@@ -226,7 +226,7 @@
 						largeRuin: { label: "Large Ruin", color: "yellow" },
 						shipwreck: { label: "Shipwreck", color: "chocolate" },
 					};
-				var status = { isDrawing: false },
+				var status = { isDrawing: false, isEditingMark: false, isEditingPoly: false, editingId: 0 },
 					svgWindow = {
 						width: 100,
 						height: 100,
@@ -293,7 +293,10 @@
 					return JSON.parse(localStorage.getItem(storageName) ?? "{}");
 				}
 
+				// ///////////
 				// crud
+
+				// general
 				function _genericDelete(storageName, id) {
 					const oldList = _getStorage(storageName);
 					const newList = Object.entries(oldList).reduce(function (s, [k, v]) {
@@ -303,6 +306,24 @@
 					_setStorage(storageName, newList);
 					return newList;
 				}
+				function createID() {
+					// console.log("--createID--");
+					return Math.random()
+						.toString(36)
+						.substring(2, 12 + 2);
+				}
+
+				// min max
+				function updateMinMax(name, value) {
+					// console.log("--updateMinMax--");
+					const oldList = _getStorage(svgStorage);
+					const newList = { ...oldList, [name]: value };
+					svgInfo[name] = value;
+					// console.log(name, ": ", value);
+					_setStorage(svgStorage, newList);
+				}
+
+				// mark
 				function createMark(value) {
 					// console.log("--createMark--");
 					const type = $("#markType").val(),
@@ -343,30 +364,12 @@
 					const newList = _genericDelete(markStorage, id);
 					reRender({ marks: newList });
 				}
-				function createID() {
-					// console.log("--createID--");
-					return Math.random()
-						.toString(36)
-						.substring(2, 12 + 2);
-				}
-				function updateMinMax(name, value) {
-					// console.log("--updateMinMax--");
-					const oldList = _getStorage(svgStorage);
-					const newList = { ...oldList, [name]: value };
-					svgInfo[name] = value;
-					// console.log(name, ": ", value);
-					_setStorage(svgStorage, newList);
-				}
-				function updateStatus(name, value) {
-					status[name] = value;
-					statusEle.html(name);
-					statusEle.show();
-				}
+
+				// poly
 				function updateAddingPoly() {
 					addingPoly[Object.keys(addingPoly).length] = { x: mouseCoordX, z: mouseCoordZ };
 					polygonCoordsEle.html(polygonCoordsEle.html() + `${mouseCoordX} ${mouseCoordZ}<br/>`);
 
-					// displayPoly(addingPoly);
 					reRender({ adding: addingPoly });
 				}
 				function resetAddingPoly() {
@@ -403,6 +406,39 @@
 					console.log("deletePoly id: ", id);
 					const newList = _genericDelete(polyStorage, id);
 					reRender({ poly: newList });
+				}
+				function editPoly(id) {
+					const oldList = _getStorage(polyStorage),
+						color = $("#editPolyColor").val();
+
+					// validate
+					if (addingPoly && id) {
+						const newPoly = {
+							...oldList[id],
+							color,
+						};
+						const newList = {
+							...oldList,
+							[id]: newPoly,
+						};
+
+						// add to list
+						_setStorage(polyStorage, newList);
+						// render
+						reRender({ poly: newList });
+					}
+				}
+
+				// status
+				function updateStatus(name, value) {
+					status[name] = value;
+					statusEle.html(name);
+					statusEle.show();
+				}
+				function updateStatusEditPoly(id) {
+					status.isEditingPoly = true;
+					status.editingId = id;
+					reRender();
 				}
 
 				// //////////
@@ -478,9 +514,11 @@
 										}, $("<div>"))
 									)
 									.append(
-										$("<div>")
-											.append($(`<i>`, { class: "fa fa-trash deletePoly", "data-polyid": id, "aria-hidden": "true" }))
-											.append($(`<i>`, { class: "fa fa-pencil editPoly", "data-polyid": id, "aria-hidden": "true" }))
+										status.isEditingPoly && id === status.editingId
+											? $("<input>", { type: "color", value: color, id: "editPolyColor" })
+											: $("<div>")
+													.append($(`<i>`, { class: "fa fa-trash deletePoly", "data-polyid": id, "aria-hidden": "true" }))
+													.append($(`<i>`, { class: "fa fa-pencil editPoly", "data-polyid": id, "aria-hidden": "true" }))
 									)
 							);
 						});
@@ -546,12 +584,13 @@
 				// ///////////
 				// on handlers
 
-				// display
-				$("#reset").on("click", function () {
-					reRender();
+				// min max
+				$(".minMax").on("change click keyup input paste", function (e) {
+					// console.log("--.minMax on change--");
+					updateMinMax(e.target.name, e.target.value);
 				});
 
-				// new mark
+				// add mark
 				$("#newValue").on("keypress", function (e) {
 					// console.log("--#newValue on keypress--");
 					const v = e.target.value;
@@ -565,22 +604,21 @@
 					const v = $("#newValue").val();
 					if (v) createMark(v);
 				});
+				// edit mark
 				$(document).on("click", ".deleteMark", function () {
 					deleteMark($(this).data("markid"));
-				});
-
-				// min max
-				$(".minMax").on("change click keyup input paste", function (e) {
-					// console.log("--.minMax on change--");
-					updateMinMax(e.target.name, e.target.value);
 				});
 
 				// window resize
 				$(window).on("resize", function () {
 					getWindowSize();
 				});
+				// refresh
+				$("#reset").on("click", function () {
+					reRender();
+				});
 
-				// svg
+				// svg mousemove
 				svgEle.on("mousemove", function (event) {
 					mousePosX = Math.floor(event.pageX - svgWindow.left);
 					mousePosY = Math.floor(event.pageY - svgWindow.top);
@@ -593,7 +631,7 @@
 					$("#mouseCoordZ").text(mouseCoordZ);
 				});
 
-				// draw polygon
+				// add polygon
 				startPolygonEle.on("click", function () {
 					displayDrawingPoly(true);
 				});
@@ -614,6 +652,13 @@
 				});
 				$(document).on("click", ".deletePoly", function () {
 					deletePoly($(this).data("polyid"));
+				});
+				// edit polygon
+				$(document).on("click", ".editPoly", function () {
+					updateStatusEditPoly($(this).data("polyid"));
+				});
+				$(document).on("click", "#editPolyColor", function () {
+					editPoly($(this).data("polyid"));
 				});
 			});
 		</script>
