@@ -7,6 +7,9 @@
 
 		<title>Cherry</title>
 
+		<!-- Favicon -->
+		<link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+
 		<!-- <link rel="stylesheet" href="style.css" /> -->
 
 		<!-- jQuery -->
@@ -29,6 +32,28 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
 		<style>
+			.cherryContainer {
+				height: calc(100vh - 40px);
+				margin: 20px;
+				box-sizing: border-box;
+				gap: 10px;
+				overflow: hidden;
+
+				display: grid;
+				grid-template-columns: 25% 75%;
+			}
+			.sidebar {
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: stretch;
+				flex-wrap: wrap;
+			}
+			.drawing {
+				padding: 20px 50px;
+				position: relative;
+			}
+
 			.form-control-sm {
 				width: 100%;
 			}
@@ -71,22 +96,19 @@
 				display: inline-block;
 			}
 
+			.axis {
+				position: absolute;
+			}
+
 			.svgWrapper {
 				position: relative;
-				margin: 20px 50px;
 			}
+
 			#svg {
 				border: 1px solid #ddddddbb;
 				box-sizing: border-box;
-				position: absolute;
-				top: 0;
-				left: 0;
+				position: relative;
 				z-index: 10;
-			}
-			#svg,
-			.svgBackground {
-				height: calc(100vh - 40px);
-				width: calc((100vh - 40px) * (974 / 842));
 			}
 			.svgBackground {
 				position: absolute;
@@ -98,122 +120,151 @@
 		</style>
 	</head>
 	<body>
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-3">
-					<div class="row gy-3 gx-2 mb-1 align-items-center">
-						<div class="col-2"><b>&nbsp;</b></div>
-						<div class="col-5"><b>X</b></div>
-						<div class="col-5"><b>Z</b></div>
-					</div>
-					<div class="row gy-3 gx-2 mb-1 align-items-center">
-						<div class="col-2">
-							<b>Min</b>
-						</div>
-						<div class="col-5">
-							<input type="number" id="minX" name="minX" class="form-control-sm minMax" />
-						</div>
-						<div class="col-5">
-							<input type="number" id="minZ" name="minZ" class="form-control-sm minMax" />
-						</div>
-					</div>
-					<div class="row gy-3 gx-2 mb-2 align-items-center">
-						<div class="col-2">
-							<b>Max</b>
-						</div>
-						<div class="col-5">
-							<input type="number" id="maxX" name="maxX" class="form-control-sm minMax" />
-						</div>
-
-						<div class="col-5">
-							<input type="number" id="maxZ" name="maxZ" class="form-control-sm minMax" />
-						</div>
-					</div>
-
-					<hr />
-
-					<div class="mb-2">
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="showMarks" checked />
-							<label class="form-check-label" for="showMarks">Show Marks</label>
-						</div>
-					</div>
-
-					<div class="row gy-3 gx-2 mb-2 align-items-center">
-						<div class="col-6">
-							<input type="text" id="newValue" class="form-control-sm" />
-						</div>
-						<div class="col-4">
-							<select id="markType" class="form-select form-select-sm" aria-label=".form-select-sm mark-type"></select>
-						</div>
-						<div class="col-2">
-							<button class="btn btn-outline-secondary btn-sm" type="button" id="submit">Add</button>
-						</div>
-					</div>
-
-					<div id="coords" class="coords">
-						<div class="marks mb-1">
-							<div><span>&nbsp;</span><b>Type</b><b>X</b><b>Z</b><b>&nbsp;</b></div>
-						</div>
-						<div id="marksTable" class="marks"></div>
-					</div>
-				</div>
-				<div class="col-6">
-					<div class="axis axis-x"></div>
-					<div class="axis axis-y"></div>
-					<button id="reset">Reset</button>
-					<div class="svgWrapper">
-						<svg id="svg" width="calc((100vh - 40px) * (974 / 842))" height="calc(100vh - 40px)">
-							<rect width="200" height="200" x="200" y="200" fill="red" />
-						</svg>
-						<img src="./images/cherry.png" alt="background image" class="svgBackground" />
-					</div>
-				</div>
-
-				<div class="col-3">
+		<div class="cherryContainer">
+			<div class="sidebar">
+				<div class="d-flex flex-row align-items-center gx-3" style="gap: 10px">
+					<b>Position: </b>
 					<div class="d-flex flex-row align-items-center gx-3" style="gap: 10px">
-						<b>Position: </b>
-						<div class="d-flex flex-row align-items-center gx-3" style="gap: 10px">
-							<div class="" id="mousePosX">0</div>
-							<div class="" id="mousePosY">0</div>
-						</div>
-						<b>Coordinates: </b>
-						<div class="d-flex flex-row align-items-center gx-3" style="gap: 10px">
-							<div class="" id="mouseCoordX">0</div>
-							<div class="" id="mouseCoordZ">0</div>
-						</div>
+						<div class="" id="mousePosX">0</div>
+						<div class="" id="mousePosY">0</div>
 					</div>
-
-					<hr />
-
-					<div class="mb-2">
-						<div class="form-check form-switch">
-							<input class="form-check-input" type="checkbox" id="showPolys" checked />
-							<label class="form-check-label" for="showPolys">Show Polys</label>
-						</div>
+					<b>Coordinates: </b>
+					<div class="d-flex flex-row align-items-center gx-3" style="gap: 10px">
+						<div class="" id="mouseCoordX">0</div>
+						<div class="" id="mouseCoordZ">0</div>
 					</div>
+				</div>
 
-					<div>
-						<div class="mb-2">
-							<button class="btn btn-outline-secondary btn-sm" type="button" id="startPolygon">Start</button>
-							<div id="saveCancel" style="display: none">
-								<b id="status"></b>
-								<button class="btn btn-outline-secondary btn-sm" type="button" id="savePolygon">Save</button>
-								<button class="btn btn-outline-secondary btn-sm" type="button" id="cancelPolygon">Cancel</button>
-								<input type="color" id="polyColor" value="#FFFFFF" />
-								<div id="polygonCoords"></div>
-							</div>
-						</div>
-						<div id="polys">
-							<div class="polys mb-1">
-								<div>
-									<span>&nbsp;</span><span><b>X</b><b>Z</b></span
-									><b>&nbsp;</b>
+				<hr />
+
+				<div class="accordion">
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="coordsHeader">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#coordsBody" aria-expanded="true" aria-controls="coordsBody">Coords</button>
+						</h2>
+						<div id="coordsBody" class="accordion-collapse collapse show" aria-labelledby="coordsHeader">
+							<div class="accordion-body">
+								<div class="row gy-3 gx-2 mb-1 align-items-center">
+									<div class="col-2"><b>&nbsp;</b></div>
+									<div class="col-5"><b>X</b></div>
+									<div class="col-5"><b>Z</b></div>
+								</div>
+								<div class="row gy-3 gx-2 mb-1 align-items-center">
+									<div class="col-2">
+										<b>Min</b>
+									</div>
+									<div class="col-5">
+										<input type="number" id="minX" name="minX" class="form-control-sm minMax" />
+									</div>
+									<div class="col-5">
+										<input type="number" id="minZ" name="minZ" class="form-control-sm minMax" />
+									</div>
+								</div>
+								<div class="row gy-3 gx-2 mb-2 align-items-center">
+									<div class="col-2">
+										<b>Max</b>
+									</div>
+									<div class="col-5">
+										<input type="number" id="maxX" name="maxX" class="form-control-sm minMax" />
+									</div>
+
+									<div class="col-5">
+										<input type="number" id="maxZ" name="maxZ" class="form-control-sm minMax" />
+									</div>
 								</div>
 							</div>
-							<div id="polyTable" class="polys"></div>
 						</div>
 					</div>
+
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="marksHeader">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#marksBody" aria-expanded="true" aria-controls="marksBody">Marks</button>
+						</h2>
+						<div id="marksBody" class="accordion-collapse collapse show" aria-labelledby="marksHeader">
+							<div class="accordion-body">
+								<div class="row">
+									<div class="mb-2">
+										<div class="form-check form-switch">
+											<input class="form-check-input" type="checkbox" id="showMarks" checked />
+											<label class="form-check-label" for="showMarks">Show Marks</label>
+										</div>
+									</div>
+
+									<div class="row gy-3 gx-2 mb-2 align-items-center">
+										<div class="col-6">
+											<input type="text" id="newValue" class="form-control-sm" />
+										</div>
+										<div class="col-4">
+											<select id="markType" class="form-select form-select-sm" aria-label=".form-select-sm mark-type"></select>
+										</div>
+										<div class="col-2">
+											<button class="btn btn-outline-secondary btn-sm" type="button" id="submit">Add</button>
+										</div>
+									</div>
+
+									<div id="coords" class="coords">
+										<div class="marks mb-1">
+											<div><span>&nbsp;</span><b>Type</b><b>X</b><b>Z</b><b>&nbsp;</b></div>
+										</div>
+										<div id="marksTable" class="marks"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="polyHeader">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#polyBody" aria-expanded="true" aria-controls="polyBody">Polys</button>
+						</h2>
+						<div id="polyBody" class="accordion-collapse collapse show" aria-labelledby="polyHeader">
+							<div class="accordion-body">
+								<div class="row">
+									<div class="mb-2">
+										<div class="form-check form-switch">
+											<input class="form-check-input" type="checkbox" id="showPolys" checked />
+											<label class="form-check-label" for="showPolys">Show Polys</label>
+										</div>
+									</div>
+
+									<div>
+										<div class="mb-2">
+											<button class="btn btn-outline-secondary btn-sm" type="button" id="startPolygon">Start</button>
+											<div id="saveCancel" style="display: none">
+												<b id="status"></b>
+												<button class="btn btn-outline-secondary btn-sm" type="button" id="savePolygon">Save</button>
+												<button class="btn btn-outline-secondary btn-sm" type="button" id="cancelPolygon">Cancel</button>
+												<input type="color" id="polyColor" value="#FFFFFF" />
+												<div id="polygonCoords"></div>
+											</div>
+										</div>
+										<div id="polys">
+											<div class="polys mb-1">
+												<div>
+													<span>&nbsp;</span><span><b>X</b><b>Z</b></span
+													><b>&nbsp;</b>
+												</div>
+											</div>
+											<div id="polyTable" class="polys"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="drawing">
+				<div class="axis axis-x"></div>
+				<div class="axis axis-y"></div>
+				<div class="axis"><i class="fa fa-refresh deleteMark" id="reset" aria-hidden="true"></i></div>
+				<div class="svgWrapper" id="svgWrapper">
+					<svg id="svg">
+						<!-- <svg id="svg" width="calc((100vh - 40px) * (974 / 842))" height="calc(100vh - 40px)"> -->
+						<rect width="200" height="200" x="200" y="200" fill="red" />
+					</svg>
+					<img src="./images/cherry.png" alt="background image" class="svgBackground" id="svgBackground" />
 				</div>
 			</div>
 		</div>
@@ -259,9 +310,12 @@
 					mousePosX,
 					mousePosY,
 					mouseCoordX,
-					mouseCoordZ;
+					mouseCoordZ,
+					isInit = false;
 				const marksTableEle = $("#marksTable"),
+					svgWrapperEle = $("#svgWrapper"),
 					svgEle = $("#svg"),
+					svgBackgroundEle = $("#svgBackground"),
 					statusEle = $("#status"),
 					startPolygonEle = $("#startPolygon"),
 					saveCancelEle = $("#saveCancel"),
@@ -274,6 +328,8 @@
 				// ////////
 				// init
 				function init() {
+					isInit = true;
+
 					// mark options
 					Object.entries(markTypes).forEach(function ([val, { label }]) {
 						$("#markType").append($("<option></option>").val(val).text(label));
@@ -296,6 +352,8 @@
 					// console.log("status.showMarks: ", status.showMarks, " $(#showMarks): ", $("#showMarks"));
 					$("#showMarks").prop("checked", status.showMarks);
 					$("#showPolys").prop("checked", status.showPolys);
+
+					isInit = false;
 				}
 				init();
 
@@ -561,13 +619,30 @@
 				function getWindowSize() {
 					// console.log("--getWindowSize--");
 
+					const eleW = Math.floor(svgWrapperEle.width()),
+						eleH = Math.floor(svgWrapperEle.height()),
+						calcW = Math.floor(eleH * (974 / 842)),
+						calcH = Math.floor(eleW * (842 / 974));
+					let newW = eleW,
+						newH = calcH;
+					if (!isInit && calcW > 0 && calcW < eleW) {
+						newW = calcW;
+						newH = eleH;
+					}
+
 					svgWindow = {
-						height: Math.floor(svgEle.height()),
-						width: Math.floor(Math.floor(svgEle.height()) * (974 / 842)),
-						top: svgEle.position().top,
-						left: svgEle.position().left,
+						width: newW,
+						height: newH,
+						top: svgWrapperEle.position().top,
+						left: svgWrapperEle.position().left,
 					};
-					// console.log("svgWindow: ", svgWindow);
+					console.log("svgWindow: ", svgWindow, " eleW: ", eleW, " eleH: ", eleH, " calcW: ", calcW, " calcH: ", calcH);
+
+					// change size
+					svgEle.width(svgWindow.width);
+					svgEle.height(svgWindow.height);
+					svgBackgroundEle.width(svgWindow.width);
+					svgBackgroundEle.height(svgWindow.height);
 
 					// re-render
 					reRender();
@@ -691,7 +766,7 @@
 					displayPoly(addingPoly);
 				});
 				$(document).on("click", ".deletePoly", function () {
-					deletePoly($(this).data("polyid"));
+					if (window.confirm("Confirm Delete?")) deletePoly($(this).data("polyid"));
 				});
 				// edit polygon
 				$(document).on("click", ".editPoly", function () {
